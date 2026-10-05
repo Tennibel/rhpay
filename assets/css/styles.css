@@ -162,7 +162,8 @@ ul, ol { padding-left: 1.2em; }
 .hero { position: relative; padding-block: clamp(40px, 5vw, 80px) clamp(56px, 6vw, 96px); overflow: clip; }
 .hero::before { content: ""; position: absolute; inset: -20% -10% auto auto; width: 60vw; aspect-ratio: 1; background: radial-gradient(closest-side, rgb(33 150 243 / .14), transparent 70%); pointer-events: none; }
 .hero__grid { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(32px, 5vw, 72px); align-items: center; }
-.hero h1 { margin-bottom: .4em; }
+.hero .eyebrow { line-height: 1.2; margin-bottom: 8px; }
+.hero h1 { line-height: 1.02; margin-bottom: .4em; }
 .hero .lead { margin-bottom: 1.6em; }
 .hero__note { display: flex; align-items: center; gap: 10px; margin-top: 28px; font-size: var(--fs-sm); color: var(--texto-suave); }
 .hero__note .ico { color: var(--azul-1); }
