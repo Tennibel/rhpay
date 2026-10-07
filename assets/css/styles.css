@@ -417,6 +417,20 @@ a.bento__card--feature:hover { background: var(--grad-marca); }
 .chip .ico { color: var(--azul-1); width: 1em; height: 1em; }
 .band .chip { background: rgb(255 255 255 / .12); border-color: rgb(255 255 255 / .25); color: #fff; }
 .band .chip .ico { color: #BFE0FF; }
+.band--map { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(300px, 520px); gap: clamp(24px, 4vw, 64px); align-items: center; }
+.band--map .band__intro { margin-top: clamp(20px, 2.4vw, 32px); max-width: 44ch; }
+.band__map { min-width: 0; -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 88%, transparent), linear-gradient(to bottom, transparent, #000 12%, #000 86%, transparent); -webkit-mask-composite: source-in; mask-image: linear-gradient(to right, transparent, #000 9%, #000 88%, transparent), linear-gradient(to bottom, transparent, #000 12%, #000 86%, transparent); mask-composite: intersect; }
+.map { display: block; width: 100%; height: auto; overflow: visible; }
+.map__c { fill: rgb(255 255 255 / .1); stroke: rgb(255 255 255 / .22); stroke-width: .6; stroke-linejoin: round; }
+.map__c--on { fill: #E6F2FF; stroke: #fff; stroke-width: .8; filter: drop-shadow(0 6px 14px rgb(10 20 90 / .35)); }
+.map__lead path { fill: none; stroke: rgb(255 255 255 / .6); stroke-width: 1; stroke-dasharray: 2 2.5; }
+.map__lead text, .map__name { font: 600 12px/1 var(--font-body); fill: #fff; }
+.map__name { fill: var(--tinta); font-weight: 700; paint-order: stroke; stroke: rgb(230 242 255 / .85); stroke-width: 3px; stroke-linejoin: round; }
+.map__dot { fill: var(--naranja, #FF731D); stroke: #fff; stroke-width: 1.6; }
+.map__pulse { fill: none; stroke: #FF731D; stroke-width: 1.4; transform-box: fill-box; transform-origin: center; animation: map-pulse 2.6s ease-out var(--d, 0s) infinite; }
+@keyframes map-pulse { from { transform: scale(1); opacity: .9; } to { transform: scale(3.2); opacity: 0; } }
+@media (max-width: 960px) { .band--map { grid-template-columns: 1fr; } .band__map { max-width: 460px; } }
+@media (max-width: 760px) { .band__map { display: none; } }
 @media (max-width: 760px) { #nomina-internacional .chips { display: none; } }
 .checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
 .checklist li { display: flex; gap: 12px; align-items: start; }
