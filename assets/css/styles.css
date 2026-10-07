@@ -417,6 +417,7 @@ a.bento__card--feature:hover { background: var(--grad-marca); }
 .chip .ico { color: var(--azul-1); width: 1em; height: 1em; }
 .band .chip { background: rgb(255 255 255 / .12); border-color: rgb(255 255 255 / .25); color: #fff; }
 .band .chip .ico { color: #BFE0FF; }
+@media (max-width: 760px) { #nomina-internacional .chips { display: none; } }
 .checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
 .checklist li { display: flex; gap: 12px; align-items: start; }
 .checklist .ico { color: var(--azul-1); margin-top: 3px; }
