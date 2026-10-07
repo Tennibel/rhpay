@@ -4,6 +4,7 @@
 @font-face { font-family: "Kodchasan"; src: url("../fonts/kodchasan-medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
 @font-face { font-family: "Kodchasan"; src: url("../fonts/kodchasan-semibold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
 @font-face { font-family: "Kodchasan"; src: url("../fonts/kodchasan-bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Outfit"; src: url("../fonts/outfit-variable.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
 
 :root {
   --naranja: #FF731D;
@@ -25,7 +26,7 @@
   --grad-noche: linear-gradient(160deg, var(--azul-3) 0%, var(--azul-noche) 100%);
 
   --font-display: "Kodchasan", system-ui, sans-serif;
-  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Outfit", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   --fs-xs: 0.8125rem;
   --fs-sm: 0.9375rem;
