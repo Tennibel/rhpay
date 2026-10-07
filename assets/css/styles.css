@@ -426,6 +426,7 @@ a.bento__card--feature:hover { background: var(--grad-marca); }
 .split--top { align-items: start; }
 @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
 .panel { padding: clamp(24px, 3vw, 40px); border-radius: var(--radius-lg); background: var(--superficie); border: 1px solid var(--linea); }
+.panel .checklist + .btn { margin-top: clamp(24px, 3vw, 40px); }
 .panel--white { background: #fff; box-shadow: var(--shadow-sm); }
 .panel--brand { background: var(--grad-marca); color: #fff; border: 0; }
 .panel--brand h2, .panel--brand h3 { color: #fff; }
