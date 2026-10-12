@@ -341,4 +341,23 @@
       btn.addEventListener("click", () => open(img));
     });
   }
+
+  /* Preguntas frecuentes: al abrir una se cierran las demás del mismo bloque */
+  $$(".faq").forEach((group) => {
+    const items = $$("details", group);
+    items.forEach((d) => {
+      const summary = $("summary", d);
+      if (!summary) return;
+      summary.addEventListener("click", () => {
+        const before = summary.getBoundingClientRect().top;
+        requestAnimationFrame(() => {
+          if (!d.open) return;
+          items.forEach((o) => { if (o !== d) o.open = false; });
+          /* Si se cerró una pregunta que estaba arriba, evita que la página "salte" */
+          const shift = summary.getBoundingClientRect().top - before;
+          if (Math.abs(shift) > 1) window.scrollBy({ top: shift, behavior: "instant" });
+        });
+      });
+    });
+  });
 })();
