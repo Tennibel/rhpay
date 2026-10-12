@@ -250,7 +250,7 @@ a.bento__card:hover { transform: translateY(-4px); box-shadow: var(--shadow); bo
 .bento__card--feature p { opacity: .88; font-size: var(--fs-base); }
 .bento__card--feature .bento__icon { background: rgb(255 255 255 / .15); color: #fff; box-shadow: none; }
 .bento__card--feature .link-arrow { color: #fff; }
-a.bento__card--feature:hover { background: var(--grad-marca); }
+a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; border-color: transparent; }
 .bento__card--feature::after { content: ""; position: absolute; right: -60px; bottom: -60px; width: 240px; height: 240px; border-radius: 50%; border: 36px solid rgb(255 255 255 / .08); }
 .bento__card--wide { grid-column: span 2; }
 .bento__list { list-style: none; padding: 0; margin: 4px 0 0; display: grid; gap: 8px; font-size: var(--fs-sm); }
