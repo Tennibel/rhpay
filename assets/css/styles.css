@@ -486,7 +486,8 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 @media (max-width: 620px) { .article-cover img { aspect-ratio: 16 / 10; border-radius: 20px; } }
 .byline { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 20px; font-size: var(--fs-sm); color: var(--texto-suave); }
 .byline__author { display: flex; align-items: center; gap: 12px; }
-.byline__avatar { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--grad-marca); color: #fff; font: 700 .95rem/1 var(--font-display); }
+.byline__avatar { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--grad-marca); color: #fff; font: 700 .95rem/1 var(--font-display); overflow: hidden; flex: none; }
+.byline__avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .byline strong { color: var(--tinta); display: block; }
 .article-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: clamp(32px, 5vw, 72px); align-items: start; padding-bottom: calc(var(--section) * .6); }
 .article-aside { position: sticky; top: calc(var(--header-h) + 24px); display: grid; gap: 18px; }
