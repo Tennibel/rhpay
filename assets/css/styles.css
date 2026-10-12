@@ -485,7 +485,7 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 .byline__author { display: flex; align-items: center; gap: 12px; }
 .byline__avatar { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--grad-marca); color: #fff; font: 700 .95rem/1 var(--font-display); }
 .byline strong { color: var(--tinta); display: block; }
-.article-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: clamp(32px, 5vw, 72px); align-items: start; }
+.article-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: clamp(32px, 5vw, 72px); align-items: start; padding-bottom: calc(var(--section) * .6); }
 .article-aside { position: sticky; top: calc(var(--header-h) + 24px); display: grid; gap: 18px; }
 .toc { padding: 22px; border-radius: var(--radius); background: var(--superficie); border: 1px solid var(--linea); }
 .toc h2 { font-size: var(--fs-xs); letter-spacing: .12em; text-transform: uppercase; color: var(--texto-suave); font-family: var(--font-body); font-weight: 700; margin-bottom: 12px; }
@@ -512,7 +512,7 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 .callout strong:first-child { display: block; margin-bottom: 6px; font-family: var(--font-display); color: var(--naranja-texto); text-transform: uppercase; letter-spacing: .08em; font-size: var(--fs-xs); }
 .callout p:last-child { margin: 0; }
 .closing { margin: 2em 0 0; padding: 26px 28px; border-radius: var(--radius-lg); background: var(--grad-marca); color: #fff; font: 600 1.25rem/1.35 var(--font-display); }
-.legal-ref { font-size: var(--fs-xs); color: var(--texto-suave); }
+.legal-ref { margin-top: 1.5em; font-size: var(--fs-xs); color: var(--texto-suave); }
 .pager { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 48px; }
 @media (max-width: 560px) { .pager { grid-template-columns: minmax(0, 1fr); } .pager .next { text-align: left; } }
 .pager a, .pager span { display: grid; gap: 4px; padding: 18px 20px; border-radius: var(--radius); border: 1px solid var(--linea); text-decoration: none; color: var(--tinta); font-weight: 600; }
