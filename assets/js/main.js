@@ -257,4 +257,88 @@
     });
     form.addEventListener("input", (e) => { if (e.target.getAttribute("aria-invalid") === "true" && e.target.checkValidity()) e.target.setAttribute("aria-invalid", "false"); });
   });
+
+  /* Infografías: clic o toque para ampliar en una ventana (lightbox) */
+  const zoomImgs = $$(".prose figure img");
+  if (zoomImgs.length && typeof HTMLDialogElement === "function") {
+    const ICON_ZOOM = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg>';
+    const ICON_OUT = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6"/></svg>';
+    const ICON_CLOSE = '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+    const dlg = document.createElement("dialog");
+    dlg.className = "lightbox";
+    dlg.setAttribute("aria-label", "Imagen ampliada");
+    dlg.innerHTML = '<div class="lightbox__bar"><button type="button" class="lightbox__btn" data-lb-zoom aria-pressed="false"></button><button type="button" class="lightbox__btn" data-lb-close>' + ICON_CLOSE + '<span>Cerrar</span></button></div><div class="lightbox__stage" data-lb-stage tabindex="0"><img class="lightbox__img" alt=""></div><p class="lightbox__cap"></p>';
+    document.body.appendChild(dlg);
+    const stage = $("[data-lb-stage]", dlg);
+    const big = $(".lightbox__img", dlg);
+    const cap = $(".lightbox__cap", dlg);
+    const zoomBtn = $("[data-lb-zoom]", dlg);
+    let zoomed = false;
+    let drag = null;
+    let moved = false;
+
+    const label = () => { zoomBtn.innerHTML = (zoomed ? ICON_OUT + "<span>Alejar</span>" : ICON_ZOOM + "<span>Acercar</span>"); zoomBtn.setAttribute("aria-pressed", String(zoomed)); };
+    const setZoom = (on, ev) => {
+      if (on === zoomed) return;
+      const r = big.getBoundingClientRect();
+      const fx = ev && r.width ? (ev.clientX - r.left) / r.width : .5;
+      const fy = ev && r.height ? (ev.clientY - r.top) / r.height : .5;
+      zoomed = on;
+      dlg.classList.toggle("is-zoomed", on);
+      if (on) {
+        big.style.width = Math.max(big.naturalWidth || 0, r.width * 1.7) + "px";
+        const w = big.getBoundingClientRect();
+        stage.scrollLeft = fx * w.width - stage.clientWidth / 2 + (w.left - stage.getBoundingClientRect().left + stage.scrollLeft);
+        stage.scrollTop = fy * w.height - stage.clientHeight / 2 + (w.top - stage.getBoundingClientRect().top + stage.scrollTop);
+      } else {
+        big.style.width = "";
+        stage.scrollTo(0, 0);
+      }
+      label();
+    };
+    const open = (img) => {
+      big.src = img.currentSrc || img.src;
+      big.alt = img.alt;
+      cap.textContent = (img.closest("figure").querySelector("figcaption") || {}).textContent || "";
+      zoomed = true; setZoom(false); label();
+      dlg.showModal();
+      document.documentElement.classList.add("lb-open");
+    };
+    dlg.addEventListener("close", () => { document.documentElement.classList.remove("lb-open"); zoomed = false; dlg.classList.remove("is-zoomed"); big.style.width = ""; });
+    $("[data-lb-close]", dlg).addEventListener("click", () => dlg.close());
+    zoomBtn.addEventListener("click", () => setZoom(!zoomed));
+    stage.addEventListener("click", (e) => {
+      if (moved) { moved = false; return; }
+      if (e.target === big) setZoom(!zoomed, e);
+      else if (!zoomed) dlg.close();
+    });
+    stage.addEventListener("pointerdown", (e) => {
+      if (!zoomed || e.pointerType !== "mouse") return;
+      drag = { x: e.clientX, y: e.clientY, l: stage.scrollLeft, t: stage.scrollTop };
+      moved = false;
+      stage.setPointerCapture(e.pointerId);
+      stage.classList.add("is-dragging");
+    });
+    stage.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      if (Math.abs(dx) + Math.abs(dy) > 5) moved = true;
+      stage.scrollLeft = drag.l - dx;
+      stage.scrollTop = drag.t - dy;
+    });
+    const endDrag = () => { drag = null; stage.classList.remove("is-dragging"); };
+    stage.addEventListener("pointerup", endDrag);
+    stage.addEventListener("pointercancel", endDrag);
+
+    zoomImgs.forEach((img) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "zoomable";
+      btn.setAttribute("aria-label", "Ampliar imagen: " + (img.alt || "infografía"));
+      img.replaceWith(btn);
+      btn.appendChild(img);
+      btn.insertAdjacentHTML("beforeend", '<span class="zoomable__hint" aria-hidden="true">' + ICON_ZOOM + "Ampliar</span>");
+      btn.addEventListener("click", () => open(img));
+    });
+  }
 })();

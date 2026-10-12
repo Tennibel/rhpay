@@ -499,6 +499,26 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 .prose li { margin-bottom: .4em; }
 .prose figure { margin: 2em 0; }
 .prose figure img { border-radius: var(--radius); border: 1px solid var(--linea); box-shadow: var(--shadow-sm); }
+.zoomable { position: relative; display: block; width: 100%; padding: 0; border: 0; background: none; border-radius: var(--radius); cursor: zoom-in; font: inherit; color: inherit; }
+.zoomable img { display: block; width: 100%; height: auto; }
+.zoomable__hint { position: absolute; right: 12px; bottom: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: var(--radius-pill); background: rgb(20 26 69 / .84); color: #fff; font: 600 var(--fs-xs)/1 var(--font-body); backdrop-filter: blur(4px); transition: background-color .2s, transform .2s var(--ease); }
+.zoomable:hover .zoomable__hint, .zoomable:focus-visible .zoomable__hint { background: var(--azul-3); transform: translateY(-2px); }
+html.lb-open { overflow: hidden; }
+dialog.lightbox { position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: transparent; color: #fff; overflow: hidden; }
+dialog.lightbox:not([open]) { display: none; }
+dialog.lightbox[open] { animation: lb-in .2s ease-out; }
+@keyframes lb-in { from { opacity: 0; } to { opacity: 1; } }
+.lightbox::backdrop { background: rgb(8 12 40 / .92); }
+.lightbox__bar { position: absolute; top: 0; left: 0; right: 0; z-index: 2; display: flex; justify-content: flex-end; gap: 10px; padding: 14px clamp(14px, 3vw, 28px); pointer-events: none; }
+.lightbox__btn { pointer-events: auto; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 1px solid rgb(255 255 255 / .35); border-radius: var(--radius-pill); background: rgb(20 26 69 / .88); color: #fff; font: 600 var(--fs-sm)/1 var(--font-body); cursor: pointer; backdrop-filter: blur(6px); transition: background-color .2s; }
+.lightbox__btn:hover { background: var(--azul-3); }
+.lightbox__stage { position: absolute; inset: 0; display: flex; overflow: auto; padding: 72px clamp(12px, 3vw, 32px) 64px; overscroll-behavior: contain; touch-action: pan-x pan-y pinch-zoom; cursor: zoom-out; outline-offset: -4px; }
+.lightbox__img { display: block; flex: none; margin: auto; max-width: 100%; max-height: calc(100dvh - 136px); width: auto; height: auto; border-radius: 12px; background: #fff; cursor: zoom-in; user-select: none; -webkit-user-drag: none; }
+.lightbox.is-zoomed .lightbox__img { max-width: none; max-height: none; cursor: grab; }
+.lightbox__stage.is-dragging .lightbox__img { cursor: grabbing; }
+.lightbox__cap { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; padding: 22px 20px 14px; text-align: center; font-size: var(--fs-xs); color: rgb(255 255 255 / .85); background: linear-gradient(transparent, rgb(8 12 40 / .85)); pointer-events: none; }
+.lightbox__cap:empty { display: none; }
+@media (max-width: 480px) { .lightbox__btn { padding: 0 14px; } .lightbox__stage { padding-inline: 8px; } }
 .prose figcaption { margin-top: 10px; font-size: var(--fs-xs); color: var(--texto-suave); }
 .prose table { width: 100%; border-collapse: collapse; margin: 0 0 1.4em; font-size: var(--fs-sm); }
 .prose th, .prose td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--linea); vertical-align: top; }
