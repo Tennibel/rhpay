@@ -463,6 +463,7 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 .band .chip .ico { color: #BFE0FF; }
 .band--map { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(300px, 520px); gap: clamp(24px, 4vw, 64px); align-items: center; }
 .band--map .band__intro { margin-top: clamp(20px, 2.4vw, 32px); max-width: 44ch; }
+.band--map { padding-block: clamp(20px, 2.4vw, 36px); }
 .band__map { min-width: 0; -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 88%, transparent), linear-gradient(to bottom, transparent, #000 12%, #000 86%, transparent); -webkit-mask-composite: source-in; mask-image: linear-gradient(to right, transparent, #000 9%, #000 88%, transparent), linear-gradient(to bottom, transparent, #000 12%, #000 86%, transparent); mask-composite: intersect; }
 .map { display: block; width: 100%; height: auto; overflow: visible; }
 .map__c { fill: rgb(255 255 255 / .1); stroke: rgb(255 255 255 / .22); stroke-width: .6; stroke-linejoin: round; }
