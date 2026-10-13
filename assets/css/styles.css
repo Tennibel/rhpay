@@ -278,6 +278,7 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 /* ---------- Tarjetas genéricas ---------- */
 .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 20px; }
 .grid-cards--3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cards--equal { grid-auto-rows: 1fr; }
 .grid-cards--5 { grid-template-columns: repeat(6, 1fr); }
 .grid-cards--5 > * { grid-column: span 2; }
 .grid-cards--5 > :nth-child(n+4) { grid-column: span 3; }
