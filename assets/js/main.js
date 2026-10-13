@@ -87,6 +87,9 @@
         panel.hidden = !on;
         if (on) panel.querySelector("[data-slider]")?._update?.();
       });
+      /* En celular la lista de pestañas se desplaza: centra la activa */
+      const list = tab.parentElement;
+      if (list.scrollWidth > list.clientWidth) list.scrollTo({ left: tab.offsetLeft - (list.clientWidth - tab.offsetWidth) / 2, behavior: "smooth" });
       if (focus) tab.focus();
     };
     tabs.forEach((tab, i) => {
