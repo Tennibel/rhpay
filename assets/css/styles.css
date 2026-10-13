@@ -74,6 +74,7 @@ ul, ol { padding-left: 1.2em; }
 .section { padding-block: var(--section); }
 .section--tight { padding-block: calc(var(--section) * .6); }
 .section--alt { background: var(--superficie); }
+.section--map { padding-block: calc(var(--section) * .35) calc(var(--section) * .7); }
 .skip-link { position: absolute; left: 12px; top: -60px; z-index: 100; background: var(--azul-3); color: #fff; padding: 10px 16px; border-radius: var(--radius-sm); }
 .skip-link:focus { top: 12px; color: #fff; }
 .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
