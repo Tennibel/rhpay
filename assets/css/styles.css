@@ -46,7 +46,7 @@
   --shadow-lg: 0 30px 60px -20px rgb(26 35 126 / 0.35);
 
   --gutter: clamp(16px, 4vw, 32px);
-  --section: clamp(64px, 6vw + 32px, 120px);
+  --section: clamp(56px, 5vw + 26px, 96px);
   --header-h: 76px;
   --ease: cubic-bezier(.2, .7, .2, 1);
 }
@@ -436,7 +436,7 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 @media (max-width: 900px) { .contact-panel { grid-template-columns: 1fr; } }
 
 /* ---------- CTA final ---------- */
-.cta-final { position: relative; text-align: center; padding-block: clamp(72px, 9vw, 140px) clamp(64px, 8vw, 120px); overflow: hidden; isolation: isolate; }
+.cta-final { position: relative; text-align: center; padding-block: clamp(64px, 7vw, 108px) clamp(56px, 6.5vw, 96px); overflow: hidden; isolation: isolate; }
 .cta-final::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(120% 90% at 50% 120%, rgb(33 150 243 / .28), transparent 60%), radial-gradient(60% 60% at 10% 10%, rgb(255 115 29 / .12), transparent 60%); }
 .cta-final h2 { max-width: 18ch; margin-inline: auto; }
 .cta-final p { margin-inline: auto; }
