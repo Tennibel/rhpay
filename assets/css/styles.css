@@ -444,6 +444,11 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 .contact-list .ico { width: 44px; height: 44px; padding: 11px; border-radius: 12px; background: rgb(255 255 255 / .14); color: #fff; }
 .contact-list small { display: block; font-weight: 400; font-size: var(--fs-xs); opacity: .8; }
 .lead-card .contact-list a, .lead-card .contact-list li > span { color: #fff; }
+.contact-panel .lead-card { display: flex; flex-direction: column; }
+.lead-card__cover { margin-top: auto; padding-top: clamp(28px, 4vw, 56px); }
+.lead-card__label { margin: 0 0 12px; font-size: var(--fs-xs); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgb(255 255 255 / .7); }
+.lead-card .chip { background: rgb(255 255 255 / .12); border-color: rgb(255 255 255 / .25); color: #fff; }
+.lead-card .chip .ico { color: #BFE0FF; }
 @media (max-width: 900px) { .contact-panel { grid-template-columns: 1fr; } }
 
 /* ---------- CTA final ---------- */
