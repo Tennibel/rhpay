@@ -470,6 +470,11 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 .checklist--cols { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 72px); align-items: center; }
 .split--top { align-items: start; }
+.grid-cards--center { --cols: 4; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+.grid-cards--center > * { flex: 0 0 calc((100% - (var(--cols) - 1) * 20px) / var(--cols)); }
+@media (max-width: 960px) { .grid-cards--center { --cols: 3; } }
+@media (max-width: 620px) { .grid-cards--center { --cols: 1; } }
+.split--stretch { align-items: stretch; }
 @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
 .panel { padding: clamp(24px, 3vw, 40px); border-radius: var(--radius-lg); background: var(--superficie); border: 1px solid var(--linea); }
 .panel .checklist + .btn { margin-top: clamp(24px, 3vw, 40px); }
@@ -515,6 +520,11 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 .byline__avatar { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--grad-marca); color: #fff; font: 700 .95rem/1 var(--font-display); overflow: hidden; flex: none; }
 .byline__avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .byline strong { color: var(--tinta); display: block; }
+.page-hero__more { margin: 0; max-width: 56ch; color: var(--texto-suave); animation: rise .8s var(--ease) .5s backwards; }
+.byline--lg { gap: 12px 20px; }
+.byline--lg .byline__author { gap: 18px; }
+.byline--lg .byline__avatar { width: 88px; height: 88px; border: 3px solid #fff; box-shadow: var(--shadow); }
+.byline--lg strong { font-size: 1.1rem; }
 .article-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: clamp(32px, 5vw, 72px); align-items: start; padding-bottom: calc(var(--section) * .6); }
 .article-aside { position: sticky; top: calc(var(--header-h) + 24px); display: grid; gap: 18px; }
 .toc { padding: 22px; border-radius: var(--radius); background: var(--superficie); border: 1px solid var(--linea); }
