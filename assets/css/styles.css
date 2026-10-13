@@ -278,6 +278,11 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 /* ---------- Tarjetas genéricas ---------- */
 .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 20px; }
 .grid-cards--3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cards--5 { grid-template-columns: repeat(6, 1fr); }
+.grid-cards--5 > * { grid-column: span 2; }
+.grid-cards--5 > :nth-child(n+4) { grid-column: span 3; }
+@media (max-width: 960px) { .grid-cards--5 { grid-template-columns: repeat(2, 1fr); } .grid-cards--5 > *, .grid-cards--5 > :nth-child(n+4) { grid-column: auto; } .grid-cards--5 > :last-child { grid-column: 1 / -1; } }
+@media (max-width: 620px) { .grid-cards--5 { grid-template-columns: 1fr; } .grid-cards--5 > :last-child { grid-column: auto; } }
 @media (max-width: 960px) { .grid-cards--3 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 620px) { .grid-cards--3 { grid-template-columns: 1fr; } }
 .card { position: relative; display: flex; flex-direction: column; gap: 10px; padding: clamp(22px, 2.4vw, 30px); border-radius: var(--radius-lg); background: #fff; border: 1px solid var(--linea); transition: transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s; }
