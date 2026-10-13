@@ -333,7 +333,7 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 .vtabs__range { font-size: var(--fs-xs); color: rgb(255 255 255 / .62); }
 .vtabs__panels { min-width: 0; padding: clamp(20px, 3vw, 36px); background: linear-gradient(180deg, #fff, var(--superficie)); }
 .vtabs__lead { color: var(--texto-suave); margin-bottom: 20px; }
-.vtabs .module-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 1fr; gap: 16px; }
+.vtabs .module-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: auto; align-items: stretch; gap: 16px; }
 .vtabs .module-grid > .module:last-child:nth-child(odd) { grid-column: 1 / -1; }
 .vtabs .module { position: relative; display: flex; flex-direction: column; padding: 24px 24px 22px; border-radius: 20px; background: #fff; border: 1px solid var(--linea); box-shadow: var(--shadow-sm); overflow: hidden; transition: transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s; }
 .vtabs .module::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--grad-marca); transform: scaleX(.18); transform-origin: left; transition: transform .35s var(--ease); }
