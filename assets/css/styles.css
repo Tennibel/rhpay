@@ -779,3 +779,5 @@ a.bento__card:hover .bento__deco--img img { transform: translateY(-4px) scale(1.
 .bento__deco--img { top: 6px; right: 14px; width: 160px; height: 160px; }
 .bento__card--feature .bento__deco--img { top: 6px; right: 10px; width: 200px; height: 200px; }
 .bento__card--wide .bento__deco--img { top: 50%; right: 48px; width: 220px; height: 220px; margin-top: -110px; }
+.bento__card h3 { font-size: clamp(1.15rem, .95rem + .6vw, 1.5rem); }
+@media (max-width: 620px) { .bento > :nth-child(n+3):not(.bento__card--wide) h3 { font-size: 1.05rem; } }
