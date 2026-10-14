@@ -790,3 +790,13 @@ a.bento__card:hover .bento__deco--img img { transform: translateY(-4px) scale(1.
 @media (prefers-reduced-motion: reduce) { .hero .btn--primary, .page-hero .btn--primary { animation: none; } }
 @media (max-width: 520px) { .hero .btn, .page-hero .btn { width: 100%; padding-inline: 16px; } .hero .btn--primary, .page-hero .btn--primary { font-size: var(--fs-sm); } }
 .bento__more { display: flex; align-items: center; justify-content: center; gap: 0; line-height: 0; }
+
+/* Tarjetas lavanda con ilustración (Soluciones) */
+.card--lav { position: relative; overflow: hidden; isolation: isolate; background: linear-gradient(135deg, #F7F8FF 0%, #E9EEFF 100%); border: 1px solid rgb(59 87 188 / .12); transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s; }
+.card--lav:hover { transform: translateY(-4px); border-color: rgb(33 150 243 / .45); box-shadow: 0 22px 44px -22px rgb(26 35 126 / .45); }
+.card--lav .card__icon { background: #fff; box-shadow: var(--shadow-sm); width: 56px; height: 56px; border-radius: 16px; margin-bottom: 64px; }
+.card--lav h3 { font-size: clamp(1.15rem, .95rem + .6vw, 1.5rem); line-height: 1.15; color: var(--azul-noche); }
+.card__art { position: absolute; z-index: -1; top: 4px; right: 10px; width: 150px; height: 150px; pointer-events: none; }
+.card__art img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 14px 18px rgb(26 35 126 / .18)); transition: transform .4s var(--ease); }
+.card--lav:hover .card__art img { transform: translateY(-4px) scale(1.05) rotate(-2deg); }
+@media (max-width: 620px) { .card__art { width: 110px; height: 110px; } .card--lav .card__icon { margin-bottom: 36px; } }
