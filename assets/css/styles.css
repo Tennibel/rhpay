@@ -781,3 +781,12 @@ a.bento__card:hover .bento__deco--img img { transform: translateY(-4px) scale(1.
 .bento__card--wide .bento__deco--img { top: 50%; right: 48px; width: 220px; height: 220px; margin-top: -110px; }
 .bento__card h3 { font-size: clamp(1.15rem, .95rem + .6vw, 1.5rem); }
 @media (max-width: 620px) { .bento > :nth-child(n+3):not(.bento__card--wide) h3 { font-size: 1.05rem; } }
+
+/* Botones de los hero con el mismo estilo que los CTA */
+.hero .btn--primary, .page-hero .btn--primary { --bg: var(--naranja); --fg: #fff; min-height: 56px; padding-inline: 30px; font-size: var(--fs-base); box-shadow: 0 12px 30px -8px rgb(255 115 29 / .75); animation: cta-pulse 2.6s ease-out infinite; }
+.hero .btn--primary:hover, .page-hero .btn--primary:hover { --bg: #FF8A40; animation: none; box-shadow: 0 16px 36px -8px rgb(255 115 29 / .9); }
+.hero .btn--ghost, .page-hero .btn--ghost { --bg: #fff; --fg: var(--azul-3); min-height: 56px; padding-inline: 28px; border-color: rgb(26 35 126 / .35); box-shadow: 0 10px 24px -14px rgb(26 35 126 / .45); }
+.hero .btn--ghost:hover, .page-hero .btn--ghost:hover { --bg: #fff; border-color: var(--azul-3); box-shadow: 0 16px 30px -14px rgb(26 35 126 / .55); }
+@media (prefers-reduced-motion: reduce) { .hero .btn--primary, .page-hero .btn--primary { animation: none; } }
+@media (max-width: 520px) { .hero .btn, .page-hero .btn { width: 100%; padding-inline: 16px; } .hero .btn--primary, .page-hero .btn--primary { font-size: var(--fs-sm); } }
+.bento__more { display: flex; align-items: center; justify-content: center; gap: 0; line-height: 0; }
