@@ -258,8 +258,16 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 .bento__list { list-style: none; padding: 0; margin: 4px 0 0; display: grid; gap: 8px; font-size: var(--fs-sm); }
 .bento__list li { display: flex; gap: 10px; align-items: start; }
 .bento__list .ico { color: #FFC59F; margin-top: 2px; }
-@media (max-width: 960px) { .bento { grid-template-columns: repeat(2, 1fr); } .bento__card--feature { grid-row: auto; grid-column: span 2; } }
-@media (max-width: 620px) { .bento { grid-template-columns: 1fr; } .bento__card--feature, .bento__card--wide { grid-column: auto; } }
+@media (max-width: 960px) { .bento { grid-template-columns: repeat(2, 1fr); } .bento__card--feature { grid-row: auto; grid-column: span 2; } .bento > :last-child { grid-column: span 2; } }
+@media (max-width: 620px) {
+  .bento { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .bento__card--feature { order: -1; grid-column: span 2; }
+  .bento > :nth-child(2), .bento__card--wide { grid-column: span 2; }
+  .bento__card--wide { order: 1; }
+  .bento > :last-child { grid-column: auto; }
+  .bento__card:not(.bento__card--feature):not(.bento__card--wide) { padding: 18px; gap: 8px; }
+  .bento > :nth-child(n+3):not(.bento__card--wide) h3 { font-size: 1.05rem; }
+}
 
 /* ---------- Banda de estadísticas ---------- */
 .band { position: relative; padding: clamp(36px, 5vw, 72px); border-radius: clamp(24px, 3vw, 40px); background: var(--grad-marca); color: #fff; overflow: hidden; isolation: isolate; }
