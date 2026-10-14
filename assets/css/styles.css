@@ -800,3 +800,8 @@ a.bento__card:hover .bento__deco--img img { transform: translateY(-4px) scale(1.
 .card__art img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 14px 18px rgb(26 35 126 / .18)); transition: transform .4s var(--ease); }
 .card--lav:hover .card__art img { transform: translateY(-4px) scale(1.05) rotate(-2deg); }
 @media (max-width: 620px) { .card__art { width: 110px; height: 110px; } .card--lav .card__icon { margin-bottom: 36px; } }
+.panel--logo { position: relative; }
+.panel__logo { position: absolute; top: clamp(20px, 2vw, 30px); right: clamp(20px, 2vw, 30px); width: clamp(104px, 9vw, 138px); height: auto; opacity: .92; }
+@media (max-width: 620px) { .panel__logo { width: 96px; } }
+.panel__logo { width: clamp(150px, 14vw, 210px); opacity: 1; }
+@media (max-width: 620px) { .panel__logo { position: static; display: block; width: 150px; margin-bottom: 14px; } }
