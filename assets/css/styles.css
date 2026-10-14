@@ -405,11 +405,19 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 
 /* ---------- Testimonios ---------- */
 .grid-quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.quote-card { position: relative; margin: 0; display: flex; flex-direction: column; gap: 18px; padding: clamp(24px, 2.6vw, 34px); border-radius: var(--radius-lg); background: #fff; border: 1px solid var(--linea); box-shadow: var(--shadow-sm); }
-.quote-card__mark { width: 36px; height: 36px; color: var(--naranja); }
+.quote-card { position: relative; overflow: hidden; margin: 0; display: flex; flex-direction: column; gap: 20px; padding: clamp(28px, 3vw, 40px); border-radius: var(--radius-lg); background: linear-gradient(180deg, #fff 0%, #F3F6FF 100%); border: 1px solid rgb(59 87 188 / .18); box-shadow: 0 14px 36px -18px rgb(26 35 126 / .35); transition: transform .3s var(--ease), box-shadow .3s var(--ease); }
+.quote-card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 5px; background: linear-gradient(90deg, var(--naranja), var(--azul-1)); }
+.quote-card::after { content: "”"; position: absolute; right: 22px; bottom: -34px; font: 700 190px/1 var(--font-display); color: var(--azul-2); opacity: .07; pointer-events: none; }
+.quote-card:hover { transform: translateY(-6px); box-shadow: 0 22px 44px -18px rgb(26 35 126 / .45); }
+.quote-card__mark { box-sizing: content-box; width: 22px; height: 22px; padding: 13px; border-radius: 50%; background: var(--naranja); color: #fff; box-shadow: 0 8px 18px -6px rgb(255 115 29 / .6); }
 .quote-card blockquote { margin: 0; }
-.quote-card blockquote p { margin: 0; font: 500 1.15rem/1.5 var(--font-display); color: var(--tinta); }
-.quote-card figcaption { margin-top: auto; font-size: var(--fs-xs); color: var(--texto-suave); text-transform: uppercase; letter-spacing: .1em; font-weight: 600; }
+.quote-card blockquote p { margin: 0; font: 500 1.2rem/1.4 var(--font-body); color: var(--tinta); }
+.quote-card figcaption { position: relative; margin-top: auto; padding-top: 16px; border-top: 1px solid rgb(59 87 188 / .18); font-size: var(--fs-xs); color: var(--azul-2); text-transform: uppercase; letter-spacing: .1em; font-weight: 600; }
+.quote-card:nth-child(2) { background: var(--grad-noche); border-color: transparent; }
+.quote-card:nth-child(2)::after { color: #fff; opacity: .08; }
+.quote-card:nth-child(2) blockquote p { color: #fff; }
+.quote-card:nth-child(2) figcaption { color: rgb(255 255 255 / .75); border-top-color: rgb(255 255 255 / .2); }
+@media (min-width: 901px) { .quote-card:nth-child(2) { transform: translateY(-14px); } .quote-card:nth-child(2):hover { transform: translateY(-20px); } .grid-quotes { padding-block: 14px; } }
 @media (max-width: 900px) { .grid-quotes { grid-template-columns: 1fr; } }
 
 /* ---------- Manual (tarjeta degradada + formulario) ---------- */
