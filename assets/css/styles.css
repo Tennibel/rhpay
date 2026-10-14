@@ -314,8 +314,13 @@ a.bento__card--feature:hover { background: var(--grad-marca); color: #fff; borde
 .card .link-arrow { margin-top: auto; padding-top: 6px; }
 
 .diff-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; counter-reset: diff; }
-.diff-grid .card { counter-increment: diff; }
-.diff-grid .card::before { content: "0" counter(diff); font: 700 2.4rem/1 var(--font-display); background: var(--grad-texto); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.diff-grid .card { --c: var(--azul-1); --c-soft: rgb(33 150 243 / .12); counter-increment: diff; position: relative; overflow: hidden; background: linear-gradient(180deg, #fff 30%, var(--c-soft) 100%); border: 1px solid color-mix(in srgb, var(--c) 28%, transparent); box-shadow: 0 12px 30px -20px color-mix(in srgb, var(--c) 70%, transparent); transition: transform .3s var(--ease), box-shadow .3s var(--ease); }
+.diff-grid .card:nth-child(2), .diff-grid .card:nth-child(5) { --c: var(--naranja); --c-soft: rgb(255 115 29 / .12); }
+.diff-grid .card:nth-child(3) { --c: var(--azul-2); --c-soft: rgb(59 87 188 / .12); }
+.diff-grid .card::after { content: ""; position: absolute; inset: 0 0 auto 0; height: 5px; background: var(--c); }
+.diff-grid .card:hover { transform: translateY(-6px); box-shadow: 0 22px 40px -18px color-mix(in srgb, var(--c) 80%, transparent); }
+.diff-grid .card::before { content: "0" counter(diff); align-self: flex-start; padding: 10px 14px; border-radius: 14px; background: var(--c); color: #fff; font: 700 1.6rem/1 var(--font-display); box-shadow: 0 10px 20px -8px color-mix(in srgb, var(--c) 80%, transparent); }
+.diff-grid .card h3 { margin-top: 6px; }
 @media (max-width: 1100px) { .diff-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 760px) { .diff-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 480px) { .diff-grid { grid-template-columns: 1fr; } }
