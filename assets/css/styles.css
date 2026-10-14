@@ -805,3 +805,6 @@ a.bento__card:hover .bento__deco--img img { transform: translateY(-4px) scale(1.
 @media (max-width: 620px) { .panel__logo { width: 96px; } }
 .panel__logo { width: clamp(150px, 14vw, 210px); opacity: 1; }
 @media (max-width: 620px) { .panel__logo { position: static; display: block; width: 150px; margin-bottom: 14px; } }
+.panel__badge { position: absolute; top: clamp(20px, 2vw, 30px); right: clamp(20px, 2vw, 30px); display: grid; place-items: center; padding: 10px 16px; border-radius: 14px; background: #fff; box-shadow: 0 10px 24px -10px rgb(14 20 82 / .5); }
+.panel__badge img { display: block; width: clamp(96px, 8vw, 124px); height: auto; }
+@media (max-width: 620px) { .panel__badge { position: static; justify-self: start; margin-bottom: 14px; width: max-content; } }
