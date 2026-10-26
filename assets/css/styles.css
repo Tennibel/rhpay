@@ -835,3 +835,6 @@ a.bento__card:hover .bento__deco--img img { transform: translateY(-4px) scale(1.
 .card--val h3 { margin: 0; font-size: clamp(1.05rem, .95rem + .35vw, 1.25rem); line-height: 1.2; color: var(--azul-noche); }
 @media (max-width: 620px) { .card__art-sm { width: 72px; height: 72px; } }
 @media (max-width: 620px) { .grid-cards--center:has(.card--val) { --cols: 2; gap: 12px; } .card--val { padding: 14px 14px 16px; } .card--val h3 { font-size: 1rem; } }
+.hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.cta-final h1 { max-width: 20ch; margin-inline: auto; color: #fff; }
+.cta-final .eyebrow { color: #FFC59F; }
