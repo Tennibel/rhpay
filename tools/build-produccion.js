@@ -106,25 +106,23 @@ function verificar() {
 fs.rmSync(DIST, { recursive: true, force: true });
 copiar(RAIZ, DIST);
 
-fs.writeFileSync(path.join(DIST, "robots.txt"), PRUEBAS ? "User-agent: *
-Disallow: /
-" : `User-agent: *
-Allow: /
-Disallow: /enviar.php
+const robots = PRUEBAS
+  ? ["User-agent: *", "Disallow: /", ""].join("\n")
+  : ["User-agent: *", "Allow: /", "Disallow: /enviar.php", "", `Sitemap: ${DOMINIO}/sitemap.xml`, ""].join("\n");
+fs.writeFileSync(path.join(DIST, "robots.txt"), robots);
 
-Sitemap: ${DOMINIO}/sitemap.xml
-`);
 let ht = fs.readFileSync(path.join(__dirname, "produccion", ".htaccess"), "utf8");
 if (PRUEBAS) {
-  // En pruebas no se redirige al dominio final: solo se fuerza HTTPS en el mismo host.
-  ht = ht.replace("RewriteRule ^ https://rhpaysolutions.com.mx%{REQUEST_URI} [L,R=301]
-
-  # 2)", "RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-  # 2)")
-         .replace(/  # 2) Sin "www"[sS]*?[L,R=301]
-
-/, "");
+  // En pruebas no se redirige al dominio final: solo se fuerza HTTPS en el mismo host y no se toca el "www".
+  const lineas = ht.split("\n");
+  const salida = [];
+  let enWww = false;
+  for (const l of lineas) {
+    if (l.includes("# 2) Sin")) { enWww = true; continue; }
+    if (enWww) { if (l.includes("# 3)")) enWww = false; else continue; }
+    salida.push(l.includes("https://rhpaysolutions.com.mx%{REQUEST_URI}") ? l.replace("rhpaysolutions.com.mx", "%{HTTP_HOST}") : l);
+  }
+  ht = salida.join("\n");
 }
 fs.writeFileSync(path.join(DIST, ".htaccess"), ht);
 fs.copyFileSync(path.join(__dirname, "produccion", "enviar.php"), path.join(DIST, "enviar.php"));
