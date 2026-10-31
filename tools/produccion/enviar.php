@@ -2,6 +2,11 @@
 /**
  * Recibe los formularios del sitio (contacto y descarga del manual) y los envía por correo.
  * Se llama desde assets/js/main.js con un POST en JSON a /enviar.php.
+ *
+ * Envío:
+ *  - Si existe config-correo.php (junto a este archivo) usa SMTP autenticado con esa cuenta (recomendado).
+ *  - Si no existe, usa mail() de PHP.
+ * Los errores de envío se guardan en ../enviar-errores.log (una carpeta arriba de public_html).
  */
 declare(strict_types=1);
 ini_set('display_errors', '0');
@@ -11,15 +16,24 @@ const REMITENTE = 'formularios@rhpaysolutions.com.mx'; // debe ser una cuenta de
 const MAX_ENVIOS_POR_VENTANA = 5;                       // por IP
 const VENTANA_SEGUNDOS = 600;
 
-header('Content-Type: application/json; charset=utf-8');
-header('Cache-Control: no-store');
-header('X-Content-Type-Options: nosniff');
-
 function responder(int $codigo, array $datos): void
 {
     http_response_code($codigo);
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+    header('X-Content-Type-Options: nosniff');
     echo json_encode($datos, JSON_UNESCAPED_UNICODE);
     exit;
+}
+
+function registrar(string $mensaje): void
+{
+    $linea = '[' . date('Y-m-d H:i:s') . '] ' . $mensaje . "\n";
+    foreach ([dirname(__DIR__) . '/enviar-errores.log', __DIR__ . '/enviar-errores.log'] as $ruta) {
+        if (@file_put_contents($ruta, $linea, FILE_APPEND | LOCK_EX) !== false) {
+            return;
+        }
+    }
 }
 
 function limpiar($valor, int $max, bool $saltos = false): string
@@ -32,6 +46,136 @@ function limpiar($valor, int $max, bool $saltos = false): string
     return mb_substr($valor, 0, $max);
 }
 
+function config(): array
+{
+    $ruta = __DIR__ . '/config-correo.php';
+    if (!is_file($ruta)) {
+        return [];
+    }
+    $c = include $ruta;
+    return is_array($c) ? $c : [];
+}
+
+/** Lee la respuesta de un servidor SMTP y devuelve [código, texto]. */
+function smtp_leer($f): array
+{
+    $texto = '';
+    while (($l = fgets($f, 1024)) !== false) {
+        $texto .= $l;
+        if (strlen($l) < 4 || $l[3] === ' ') {
+            break;
+        }
+    }
+    return [(int) substr($texto, 0, 3), trim($texto)];
+}
+
+function smtp_cmd($f, string $cmd, array $esperados): string
+{
+    if ($cmd !== '') {
+        fwrite($f, $cmd . "\r\n");
+    }
+    [$cod, $txt] = smtp_leer($f);
+    if (!in_array($cod, $esperados, true)) {
+        throw new RuntimeException('SMTP respondió ' . $txt . ($cmd !== '' && strpos($cmd, 'AUTH') !== 0 ? ' (a: ' . $cmd . ')' : ''));
+    }
+    return $txt;
+}
+
+/** Envío por SMTP autenticado, sin librerías externas. Lanza RuntimeException si falla. */
+function enviar_smtp(array $c, string $de, string $para, string $asunto, string $cuerpo, string $replyTo): void
+{
+    $host   = (string) ($c['host'] ?? '');
+    $puerto = (int) ($c['port'] ?? 465);
+    $modo   = (string) ($c['secure'] ?? 'ssl'); // ssl | tls | ''
+    $prefijo = $modo === 'ssl' ? 'ssl://' : '';
+    $f = @stream_socket_client($prefijo . $host . ':' . $puerto, $errno, $errstr, 12, STREAM_CLIENT_CONNECT);
+    if (!$f) {
+        throw new RuntimeException("No se pudo conectar a $host:$puerto ($errstr)");
+    }
+    stream_set_timeout($f, 15);
+    try {
+        smtp_cmd($f, '', [220]);
+        $ehlo = gethostname() ?: 'rhpaysolutions.com.mx';
+        smtp_cmd($f, 'EHLO ' . $ehlo, [250]);
+        if ($modo === 'tls') {
+            smtp_cmd($f, 'STARTTLS', [220]);
+            if (!stream_socket_enable_crypto($f, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+                throw new RuntimeException('No se pudo activar TLS');
+            }
+            smtp_cmd($f, 'EHLO ' . $ehlo, [250]);
+        }
+        if (!empty($c['user'])) {
+            smtp_cmd($f, 'AUTH LOGIN', [334]);
+            smtp_cmd($f, base64_encode((string) $c['user']), [334]);
+            smtp_cmd($f, base64_encode((string) ($c['pass'] ?? '')), [235]);
+        }
+        smtp_cmd($f, 'MAIL FROM:<' . $de . '>', [250]);
+        smtp_cmd($f, 'RCPT TO:<' . $para . '>', [250, 251]);
+        smtp_cmd($f, 'DATA', [354]);
+
+        $cab = [
+            'Date: ' . date('r'),
+            'From: ' . mb_encode_mimeheader('RH Pay Solutions', 'UTF-8', 'B', "\r\n") . ' <' . $de . '>',
+            'To: <' . $para . '>',
+            'Reply-To: ' . $replyTo,
+            'Subject: ' . mb_encode_mimeheader($asunto, 'UTF-8', 'B', "\r\n"),
+            'Message-ID: <' . bin2hex(random_bytes(8)) . '@rhpaysolutions.com.mx>',
+            'MIME-Version: 1.0',
+            'Content-Type: text/plain; charset=UTF-8',
+            'Content-Transfer-Encoding: base64',
+        ];
+        $datos = implode("\r\n", $cab) . "\r\n\r\n" . chunk_split(base64_encode($cuerpo), 76, "\r\n");
+        fwrite($f, $datos . ".\r\n");
+        smtp_cmd($f, '', [250]);
+        @fwrite($f, "QUIT\r\n");
+    } finally {
+        @fclose($f);
+    }
+}
+
+function enviar_correo(string $asunto, string $cuerpo, string $replyTo): void
+{
+    $c = config();
+    if (!empty($c['host'])) {
+        enviar_smtp($c, REMITENTE, DESTINO, $asunto, $cuerpo, $replyTo);
+        return;
+    }
+    $cabeceras = [
+        'From: RH Pay Solutions <' . REMITENTE . '>',
+        'Reply-To: ' . $replyTo,
+        'MIME-Version: 1.0',
+        'Content-Type: text/plain; charset=UTF-8',
+        'X-Mailer: PHP/' . PHP_VERSION,
+    ];
+    $ok = mail(DESTINO, mb_encode_mimeheader($asunto, 'UTF-8', 'B', "\r\n"), $cuerpo, implode("\r\n", $cabeceras), '-f' . REMITENTE);
+    if (!$ok) {
+        throw new RuntimeException('mail() de PHP devolvió falso');
+    }
+}
+
+/* ---------- Diagnóstico: /enviar.php?diagnostico=CLAVE ---------- */
+if (isset($_GET['diagnostico'])) {
+    header('Content-Type: text/plain; charset=utf-8');
+    header('Cache-Control: no-store');
+    $c = config();
+    $clave = (string) ($c['clave_diagnostico'] ?? '');
+    if ($clave === '' || !hash_equals($clave, (string) $_GET['diagnostico'])) {
+        http_response_code(404);
+        exit("No encontrado\n");
+    }
+    echo 'PHP ' . PHP_VERSION . "\n";
+    echo 'Modo de envío: ' . (!empty($c['host']) ? 'SMTP (' . $c['host'] . ':' . ($c['port'] ?? 465) . ', ' . ($c['secure'] ?? 'ssl') . ')' : 'mail() de PHP') . "\n";
+    echo 'Remitente: ' . REMITENTE . "\nDestino: " . DESTINO . "\n";
+    try {
+        enviar_correo('[Sitio web] Prueba de envío', "Este es un correo de prueba del formulario de rhpaysolutions.com.mx.\nFecha: " . date('d/m/Y H:i') . "\n", REMITENTE);
+        echo "RESULTADO: enviado. Revisa la bandeja (y spam) de " . DESTINO . "\n";
+    } catch (Throwable $e) {
+        echo 'RESULTADO: ERROR - ' . $e->getMessage() . "\n";
+    }
+    exit;
+}
+
+/* ---------- Formularios ---------- */
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     responder(405, ['ok' => false, 'error' => 'metodo']);
 }
@@ -115,23 +259,10 @@ $lineas[] = 'Página: ' . ($pagina !== '' ? $pagina : '-') . ($origenForm !== ''
 $lineas[] = 'Fecha: ' . date('d/m/Y H:i') . ' (hora del servidor)';
 $lineas[] = 'IP: ' . $ip;
 
-$cabeceras = [
-    'From: RH Pay Solutions <' . REMITENTE . '>',
-    'Reply-To: ' . $nombre . ' <' . $correo . '>',
-    'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset=UTF-8',
-    'X-Mailer: PHP/' . PHP_VERSION,
-];
-
-$enviado = mail(
-    DESTINO,
-    mb_encode_mimeheader($asunto, 'UTF-8', 'B', "\r\n"),
-    implode("\r\n", $lineas),
-    implode("\r\n", $cabeceras),
-    '-f' . REMITENTE
-);
-
-if (!$enviado) {
+try {
+    enviar_correo($asunto, implode("\r\n", $lineas), $nombre . ' <' . $correo . '>');
+} catch (Throwable $e) {
+    registrar('Falló el envío (' . $formulario . ', ' . $correo . '): ' . $e->getMessage());
     responder(500, ['ok' => false, 'error' => 'envio']);
 }
 

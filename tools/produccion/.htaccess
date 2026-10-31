@@ -55,3 +55,8 @@ ErrorDocument 404 /404.html
 AddType font/woff2 .woff2
 AddType image/webp .webp
 AddDefaultCharset UTF-8
+
+# Archivos internos: no se pueden abrir desde el navegador
+<FilesMatch "^(config-correo.*\.php|enviar-errores\.log)$">
+  Require all denied
+</FilesMatch>

@@ -126,6 +126,7 @@ if (PRUEBAS) {
 }
 fs.writeFileSync(path.join(DIST, ".htaccess"), ht);
 fs.copyFileSync(path.join(__dirname, "produccion", "enviar.php"), path.join(DIST, "enviar.php"));
+fs.copyFileSync(path.join(__dirname, "produccion", "config-correo.ejemplo.php"), path.join(DIST, "config-correo.ejemplo.php"));
 crear404();
 
 const problemas = verificar();
