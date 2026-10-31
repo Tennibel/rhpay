@@ -137,7 +137,8 @@ function enviar_correo(string $asunto, string $cuerpo, string $replyTo): void
 {
     $c = config();
     if (!empty($c['host'])) {
-        enviar_smtp($c, REMITENTE, DESTINO, $asunto, $cuerpo, $replyTo);
+        // El remitente debe ser la misma cuenta con la que se inicia sesión en el SMTP.
+        enviar_smtp($c, (string) ($c['user'] ?? REMITENTE), DESTINO, $asunto, $cuerpo, $replyTo);
         return;
     }
     $cabeceras = [
