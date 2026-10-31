@@ -6,13 +6,14 @@
  * Envío:
  *  - Si existe config-correo.php (junto a este archivo) usa SMTP autenticado con esa cuenta (recomendado).
  *  - Si no existe, usa mail() de PHP.
+ * El correo llega en HTML con la marca del sitio y una versión de texto plano.
  * Los errores de envío se guardan en ../enviar-errores.log (una carpeta arriba de public_html).
  */
 declare(strict_types=1);
 ini_set('display_errors', '0');
 
 const DESTINO   = 'mkt@rhpay.com.mx';
-const REMITENTE = 'formularios@rhpaysolutions.com.mx'; // debe ser una cuenta del dominio que aloja el sitio
+const REMITENTE = 'formularios@rhpaysolutions.com.mx'; // se usa solo si no hay config-correo.php
 const MAX_ENVIOS_POR_VENTANA = 5;                       // por IP
 const VENTANA_SEGUNDOS = 600;
 
@@ -46,6 +47,11 @@ function limpiar($valor, int $max, bool $saltos = false): string
     return mb_substr($valor, 0, $max);
 }
 
+function h(string $t): string
+{
+    return htmlspecialchars($t, ENT_QUOTES, 'UTF-8');
+}
+
 function config(): array
 {
     $ruta = __DIR__ . '/config-correo.php';
@@ -54,6 +60,61 @@ function config(): array
     }
     $c = include $ruta;
     return is_array($c) ? $c : [];
+}
+
+/** Arma el cuerpo MIME: solo texto, o multipart/alternative (texto + HTML). Devuelve [cabeceras, cuerpo]. */
+function armar_mime(string $texto, ?string $html): array
+{
+    $b64 = static fn (string $t): string => chunk_split(base64_encode($t), 76, "\r\n");
+    if ($html === null) {
+        return [['Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: base64'], $b64($texto)];
+    }
+    $lim = 'rhpay_' . bin2hex(random_bytes(8));
+    $cuerpo = '--' . $lim . "\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . $b64($texto)
+        . '--' . $lim . "\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . $b64($html)
+        . '--' . $lim . "--\r\n";
+    return [['Content-Type: multipart/alternative; boundary="' . $lim . '"'], $cuerpo];
+}
+
+/**
+ * Correo HTML con la marca del sitio.
+ * @param array<string,string> $filas   etiqueta => valor (el valor ya viene escapado / con HTML)
+ * @param array<string,string> $botones etiqueta => URL
+ */
+function armar_html(string $etiqueta, string $titulo, string $subtitulo, array $filas, string $mensaje, array $botones, string $pie): string
+{
+    $azul = '#1A237E';
+    $naranja = '#FF731D';
+    $f = '';
+    foreach ($filas as $k => $v) {
+        $f .= '<tr><td style="padding:10px 14px;background:#F4F6FB;border-radius:10px 0 0 10px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5A6072;width:34%;vertical-align:top;">' . h($k) . '</td>'
+            . '<td style="padding:10px 14px;background:#F4F6FB;border-radius:0 10px 10px 0;font-size:15px;font-weight:600;color:#141A45;vertical-align:top;">' . $v . '</td></tr>';
+    }
+    $m = '';
+    if ($mensaje !== '') {
+        $m = '<tr><td style="padding:6px 32px 8px;"><div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5A6072;margin:6px 0 8px;">Mensaje</div>'
+            . '<div style="font-size:15px;line-height:1.6;color:#141A45;background:#FFF4EC;border-left:4px solid ' . $naranja . ';padding:14px 16px;border-radius:0 12px 12px 0;">' . nl2br(h($mensaje)) . '</div></td></tr>';
+    }
+    $b = '';
+    foreach ($botones as $txt => $url) {
+        $principal = $b === '';
+        $b .= '<a href="' . h($url) . '" style="display:inline-block;margin:0 8px 8px 0;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:700;text-decoration:none;'
+            . ($principal ? 'background:' . $naranja . ';color:#FFFFFF;' : 'background:#FFFFFF;color:' . $azul . ';border:1.5px solid #C9D1EE;') . '">' . h($txt) . '</a>';
+    }
+    return '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' . h($titulo) . '</title></head>'
+        . '<body style="margin:0;padding:0;background:#EEF1F8;">'
+        . '<div style="background:#EEF1F8;padding:28px 12px;font-family:Segoe UI,Helvetica,Arial,sans-serif;">'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;background:#FFFFFF;border-radius:20px;overflow:hidden;box-shadow:0 10px 30px rgba(14,20,82,.12);">'
+        . '<tr><td style="background:#0E1452;background-image:linear-gradient(135deg,#1A237E,#0E1452);padding:26px 32px;"><img src="https://rhpaysolutions.com.mx/assets/img/logos/logo-correo.png" alt="RH Pay Solutions" width="150" style="display:block;width:150px;height:auto;border:0;"></td></tr>'
+        . '<tr><td style="height:4px;background:' . $naranja . ';line-height:4px;font-size:0;">&nbsp;</td></tr>'
+        . '<tr><td style="padding:26px 32px 0;"><span style="display:inline-block;background:' . $naranja . ';color:#FFFFFF;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:999px;">' . h($etiqueta) . '</span>'
+        . '<div style="font-size:24px;line-height:1.25;font-weight:800;color:' . $azul . ';margin-top:14px;">' . h($titulo) . '</div>'
+        . '<div style="font-size:14px;color:#5A6072;margin-top:4px;">' . h($subtitulo) . '</div></td></tr>'
+        . '<tr><td style="padding:18px 32px 6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0 6px;">' . $f . '</table></td></tr>'
+        . $m
+        . '<tr><td style="padding:14px 32px 22px;">' . $b . '</td></tr>'
+        . '<tr><td style="padding:16px 32px;background:#F4F6FB;border-top:1px solid #E3E8F5;font-size:12px;line-height:1.6;color:#5A6072;">' . $pie . '</td></tr>'
+        . '</table></div></body></html>';
 }
 
 /** Lee la respuesta de un servidor SMTP y devuelve [código, texto]. */
@@ -82,7 +143,7 @@ function smtp_cmd($f, string $cmd, array $esperados): string
 }
 
 /** Envío por SMTP autenticado, sin librerías externas. Lanza RuntimeException si falla. */
-function enviar_smtp(array $c, string $de, string $para, string $asunto, string $cuerpo, string $replyTo): void
+function enviar_smtp(array $c, string $de, string $para, string $asunto, string $cuerpo, string $replyTo, ?string $html = null): void
 {
     $host   = (string) ($c['host'] ?? '');
     $puerto = (int) ($c['port'] ?? 465);
@@ -128,10 +189,9 @@ function enviar_smtp(array $c, string $de, string $para, string $asunto, string 
             'Subject: ' . mb_encode_mimeheader($asunto, 'UTF-8', 'B', "\r\n"),
             'Message-ID: <' . bin2hex(random_bytes(8)) . '@rhpaysolutions.com.mx>',
             'MIME-Version: 1.0',
-            'Content-Type: text/plain; charset=UTF-8',
-            'Content-Transfer-Encoding: base64',
         ];
-        $datos = implode("\r\n", $cab) . "\r\n\r\n" . chunk_split(base64_encode($cuerpo), 76, "\r\n");
+        [$cabMime, $cuerpoMime] = armar_mime($cuerpo, $html);
+        $datos = implode("\r\n", array_merge($cab, $cabMime)) . "\r\n\r\n" . $cuerpoMime;
         fwrite($f, $datos . ".\r\n");
         smtp_cmd($f, '', [250]);
         @fwrite($f, "QUIT\r\n");
@@ -140,22 +200,22 @@ function enviar_smtp(array $c, string $de, string $para, string $asunto, string 
     }
 }
 
-function enviar_correo(string $asunto, string $cuerpo, string $replyTo): void
+function enviar_correo(string $asunto, string $cuerpo, string $replyTo, ?string $html = null): void
 {
     $c = config();
     if (!empty($c['host'])) {
         // El remitente debe ser la misma cuenta con la que se inicia sesión en el SMTP.
-        enviar_smtp($c, (string) ($c['user'] ?? REMITENTE), DESTINO, $asunto, $cuerpo, $replyTo);
+        enviar_smtp($c, (string) ($c['user'] ?? REMITENTE), DESTINO, $asunto, $cuerpo, $replyTo, $html);
         return;
     }
-    $cabeceras = [
+    [$cabMime, $cuerpoMime] = armar_mime($cuerpo, $html);
+    $cabeceras = array_merge([
         'From: RH Pay Solutions <' . REMITENTE . '>',
         'Reply-To: ' . $replyTo,
         'MIME-Version: 1.0',
-        'Content-Type: text/plain; charset=UTF-8',
         'X-Mailer: PHP/' . PHP_VERSION,
-    ];
-    $ok = mail(DESTINO, mb_encode_mimeheader($asunto, 'UTF-8', 'B', "\r\n"), $cuerpo, implode("\r\n", $cabeceras), '-f' . REMITENTE);
+    ], $cabMime);
+    $ok = mail(DESTINO, mb_encode_mimeheader($asunto, 'UTF-8', 'B', "\r\n"), $cuerpoMime, implode("\r\n", $cabeceras), '-f' . REMITENTE);
     if (!$ok) {
         throw new RuntimeException('mail() de PHP devolvió falso');
     }
@@ -177,7 +237,17 @@ if (isset($_GET['diagnostico'])) {
     $copias = array_filter((array) ($c['copia'] ?? []));
     echo 'Copia oculta a: ' . ($copias ? implode(', ', $copias) : '(ninguna)') . "\n";
     try {
-        enviar_correo('[Sitio web] Prueba de envío', "Este es un correo de prueba del formulario de rhpaysolutions.com.mx.\nFecha: " . date('d/m/Y H:i') . "\n", REMITENTE);
+        $fecha = date('d/m/Y H:i');
+        $html = armar_html(
+            'Prueba de envío',
+            'El formulario está funcionando',
+            'Correo de prueba de rhpaysolutions.com.mx',
+            ['Estado' => 'Enviado correctamente', 'Fecha' => h($fecha)],
+            '',
+            ['Ir al sitio' => 'https://rhpaysolutions.com.mx/'],
+            'Este es un correo de prueba generado desde el enlace de diagnóstico.'
+        );
+        enviar_correo('[Sitio web] Prueba de envío', "Este es un correo de prueba del formulario de rhpaysolutions.com.mx.\nFecha: " . $fecha . "\n", REMITENTE, $html);
         echo "RESULTADO: enviado. Revisa la bandeja (y spam) de " . DESTINO . "\n";
     } catch (Throwable $e) {
         echo 'RESULTADO: ERROR - ' . $e->getMessage() . "\n";
@@ -243,6 +313,10 @@ if ($nombre === '' || $empresa === '' || $correo === '' || !$aviso) {
 $titulos = ['contacto' => 'Solicitud de diagnóstico', 'manual' => 'Descarga del manual'];
 $asunto  = '[Sitio web] ' . $titulos[$formulario] . ' - ' . $empresa;
 
+$tel = preg_replace('/\D+/', '', $telefono) ?? '';
+$wa  = strlen($tel) === 10 ? '52' . $tel : $tel;
+
+/* Versión de texto plano */
 $lineas = [
     $titulos[$formulario],
     str_repeat('-', 40),
@@ -269,8 +343,39 @@ $lineas[] = 'Página: ' . ($pagina !== '' ? $pagina : '-') . ($origenForm !== ''
 $lineas[] = 'Fecha: ' . date('d/m/Y H:i') . ' (hora del servidor)';
 $lineas[] = 'IP: ' . $ip;
 
+/* Versión HTML */
+$filas = [
+    'Nombre'   => h($nombre),
+    'Empresa'  => h($empresa),
+    'Correo'   => '<a href="mailto:' . h($correo) . '" style="color:#1A237E;text-decoration:none;">' . h($correo) . '</a>',
+    'Teléfono' => $telefono !== ''
+        ? '<a href="tel:+' . h($tel) . '" style="color:#1A237E;text-decoration:none;">' . h($telefono) . '</a>'
+        : '<span style="color:#8A90A2;font-weight:400;">No indicado</span>',
+];
+if ($interes !== '') {
+    $filas['Le interesa'] = h($interes);
+}
+if ($colabs !== '') {
+    $filas['Colaboradores'] = h($colabs);
+}
+$botones = ['Responder por correo' => 'mailto:' . $correo . '?subject=' . rawurlencode('Re: ' . $titulos[$formulario] . ' - RH Pay Solutions')];
+if (strlen($tel) >= 10) {
+    $botones['Escribir por WhatsApp'] = 'https://wa.me/' . $wa;
+}
+$pie = 'Enviado desde <strong>' . h($pagina !== '' ? $pagina : '/') . '</strong>' . ($origenForm !== '' ? ' · origen: ' . h($origenForm) : '')
+     . '<br>' . date('d/m/Y H:i') . ' (hora del servidor) · IP ' . h($ip) . '<br>Aceptó el aviso de privacidad.';
+$html = armar_html(
+    $formulario === 'manual' ? 'Descarga del manual' : 'Nueva solicitud',
+    $empresa,
+    $nombre . ' · ' . $titulos[$formulario],
+    $filas,
+    $mensaje,
+    $botones,
+    $pie
+);
+
 try {
-    enviar_correo($asunto, implode("\r\n", $lineas), $nombre . ' <' . $correo . '>');
+    enviar_correo($asunto, implode("\r\n", $lineas), $nombre . ' <' . $correo . '>', $html);
 } catch (Throwable $e) {
     registrar('Falló el envío (' . $formulario . ', ' . $correo . '): ' . $e->getMessage());
     responder(500, ['ok' => false, 'error' => 'envio']);
