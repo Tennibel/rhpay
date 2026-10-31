@@ -17,4 +17,7 @@ return [
     'user'   => 'contacto@rhpaysolutions.com.mx', // mismo valor que BIOSYNC_SMTP_USER
     'pass'   => 'ESCRIBE_AQUI_LA_CONTRASENA',  // mismo valor que BIOSYNC_SMTP_PASS
     'clave_diagnostico' => 'cambia-esta-frase-por-una-clave-larga',
+    // Copia oculta de cada formulario a estas direcciones (solo con SMTP). Útil para comprobar que los correos llegan.
+    // Ejemplo: ['tu-correo@ejemplo.com']. Déjalo en [] cuando termines las pruebas.
+    'copia'  => [],
 ];

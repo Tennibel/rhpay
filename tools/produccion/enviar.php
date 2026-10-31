@@ -111,6 +111,13 @@ function enviar_smtp(array $c, string $de, string $para, string $asunto, string 
         }
         smtp_cmd($f, 'MAIL FROM:<' . $de . '>', [250]);
         smtp_cmd($f, 'RCPT TO:<' . $para . '>', [250, 251]);
+        // Copias ocultas (por ejemplo, para comprobar que los correos llegan): config-correo.php > 'copia'.
+        foreach ((array) ($c['copia'] ?? []) as $extra) {
+            $extra = filter_var(trim((string) $extra), FILTER_VALIDATE_EMAIL);
+            if ($extra) {
+                smtp_cmd($f, 'RCPT TO:<' . $extra . '>', [250, 251]);
+            }
+        }
         smtp_cmd($f, 'DATA', [354]);
 
         $cab = [
@@ -166,7 +173,9 @@ if (isset($_GET['diagnostico'])) {
     }
     echo 'PHP ' . PHP_VERSION . "\n";
     echo 'Modo de envío: ' . (!empty($c['host']) ? 'SMTP (' . $c['host'] . ':' . ($c['port'] ?? 465) . ', ' . ($c['secure'] ?? 'ssl') . ')' : 'mail() de PHP') . "\n";
-    echo 'Remitente: ' . REMITENTE . "\nDestino: " . DESTINO . "\n";
+    echo 'Remitente: ' . (!empty($c['host']) ? ($c['user'] ?? REMITENTE) : REMITENTE) . "\nDestino: " . DESTINO . "\n";
+    $copias = array_filter((array) ($c['copia'] ?? []));
+    echo 'Copia oculta a: ' . ($copias ? implode(', ', $copias) : '(ninguna)') . "\n";
     try {
         enviar_correo('[Sitio web] Prueba de envío', "Este es un correo de prueba del formulario de rhpaysolutions.com.mx.\nFecha: " . date('d/m/Y H:i') . "\n", REMITENTE);
         echo "RESULTADO: enviado. Revisa la bandeja (y spam) de " . DESTINO . "\n";
