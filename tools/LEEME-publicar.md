@@ -20,4 +20,4 @@ Si no existe `config-correo.php`, el script usa `mail()` de PHP (menos confiable
 
 ## Google Tag Manager
 El contenedor `GTM-PRZSSZQD` se inyecta solo al generar `dist/` en modo producción (no en `--pruebas` ni en GitHub Pages). Para cambiar de contenedor, edita `GTM_ID` en `tools/build-produccion.js`.
-En Tag Manager agrega la etiqueta "Google Analytics: configuración de GA4" con tu ID `G-...`, activada en "All Pages", y publica el contenedor.
+Google Analytics 4 (`G-C6RT1J8431`) también se inyecta con `gtag` directo en el build. **No agregues una etiqueta de GA4 dentro de Tag Manager**: cada visita se contaría dos veces. Tag Manager queda disponible para otras etiquetas (Google Ads, Meta, etc.).
