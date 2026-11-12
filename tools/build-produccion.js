@@ -17,9 +17,14 @@ const DIST = path.join(RAIZ, "dist");
 const EXCLUIR = new Set([".git", ".gitignore", ".nojekyll", "tools", "dist", "node_modules"]);
 const TEXTO = new Set([".html", ".css", ".js", ".xml", ".txt", ".svg", ".json"]);
 const DOMINIO = "https://rhpaysolutions.com.mx";
+const GTM_ID = "GTM-PRZSSZQD"; // Google Tag Manager: solo se instala en la versión de producción, no en la de pruebas ni en GitHub Pages
+const GTM_HEAD = `<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');</script>
+`;
+const GTM_BODY = `
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>`;
 
 const PRUEBAS = process.argv.includes("--pruebas"); // para un subdominio de pruebas: conserva noindex y bloquea robots
-const cuentas = { archivos: 0, prefijo: 0, noindex: 0 };
+const cuentas = { archivos: 0, prefijo: 0, noindex: 0, gtm: 0 };
 
 function copiar(origen, destino) {
   fs.mkdirSync(destino, { recursive: true });
@@ -42,6 +47,11 @@ function transformar(ruta, s) {
   s = s.split("/rhpay/").join("/");
   if (s !== antes) cuentas.prefijo++;
 
+  if (rel.endsWith(".html") && !PRUEBAS && rel !== "404.html") {
+    if (!/<head>/.test(s) || !/<body[^>]*>/.test(s)) throw new Error("Sin <head> o <body> en " + rel);
+    s = s.replace(/<head>\r?\n/, (m) => m + GTM_HEAD).replace(/<body[^>]*>/, (m) => m + GTM_BODY);
+    cuentas.gtm++;
+  }
   if (rel.endsWith(".html")) {
     const esGracias = rel.includes("/gracias/");
     if (!esGracias && !PRUEBAS) {
@@ -133,6 +143,7 @@ const problemas = verificar();
 console.log(`Archivos copiados: ${cuentas.archivos}`);
 console.log(`Archivos con prefijo /rhpay/ corregido: ${cuentas.prefijo}`);
 console.log(`Páginas con noindex retirado: ${cuentas.noindex}`);
+console.log(`Páginas con Google Tag Manager: ${cuentas.gtm}`);
 console.log(PRUEBAS ? "MODO PRUEBAS: noindex conservado y robots.txt bloqueado." : "");
 console.log(problemas.length ? "PROBLEMAS:\n" + problemas.join("\n") : "Verificación: sin /rhpay/ ni noindex fuera de las páginas permitidas.");
 process.exit(problemas.length ? 1 : 0);

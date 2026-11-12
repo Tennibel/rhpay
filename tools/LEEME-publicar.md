@@ -17,3 +17,7 @@ Pendiente: redirecciones 301 del sitio anterior (sección 3 de `.htaccess`) y Go
 3. Abre `https://rhpaysolutions.com.mx/enviar.php?diagnostico=TU_CLAVE`: manda un correo de prueba a mkt@rhpay.com.mx y muestra el resultado o el error exacto.
 4. Los fallos del formulario quedan en `enviar-errores.log`, una carpeta arriba de `public_html`.
 Si no existe `config-correo.php`, el script usa `mail()` de PHP (menos confiable: puede caer en spam).
+
+## Google Tag Manager
+El contenedor `GTM-PRZSSZQD` se inyecta solo al generar `dist/` en modo producción (no en `--pruebas` ni en GitHub Pages). Para cambiar de contenedor, edita `GTM_ID` en `tools/build-produccion.js`.
+En Tag Manager agrega la etiqueta "Google Analytics: configuración de GA4" con tu ID `G-...`, activada en "All Pages", y publica el contenedor.
